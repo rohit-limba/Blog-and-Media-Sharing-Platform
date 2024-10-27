@@ -1,0 +1,49 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  // unique id 
+  id String @id @default(uuid())
+
+  // User information
+  email    String @unique
+  username String @unique
+  password String
+
+  posts Post[]
+
+  // meta-data
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum Category {
+  ANONYMOUS
+  NON_ANONYMOUS
+}
+
+model Post {
+  id String @id @default(uuid())
+
+  // user User @relation('')
+  category Category @default(NON_ANONYMOUS)
+  src      String
+  content  String   @db.Text
+  username String
+
+  // meta-data
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  User   User?   @relation(fields: [userId], references: [id])
+  userId String?
+}
